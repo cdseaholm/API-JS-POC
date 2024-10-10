@@ -1,4 +1,4 @@
-# API Fetching JavaScript Proof of Concept App
+# API Fetching JavaScript Proof of Concept
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
