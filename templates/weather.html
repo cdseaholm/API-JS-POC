@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather</title>
+    <link rel="stylesheet" type="text/css" href="/stylesheet.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to this POC to check the Weather or Stocks by Carl Seaholm</h1>
+        </div>
+        <div class="menu">
+            <a class="menuItem" href="/">Home</a>
+            <a class="menuItem" href="/weather">Weather</a>
+            <a class="menuItem" href="/stocks">Stocks</a>
+        </div>
+        <div class="content">
+            <div class="containerTwo">
+                <div class="weatherContainer">
+                    <input id="weatherInput" type='search' placeholder="Enter city name">
+                    <p>Please be aware not all cities will be available right now</p>
+                </div>
+                <button id="weatherButton" type="button">Get Weather</button>
+            </div>
+            <div id="weatherInfo" style="display: none;">
+                <p>Weather: <span id="weather"></span></p>
+                <p>Temperature: <span id="temperature"></span></p>
+                <p>Feels Like: <span id="feelsLike"></span></p>
+                <p>Humidity: <span id="humidity"></span></p>
+                <p>Wind Speed: <span id="windSpeed"></span></p>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            const cities = [
+                'New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose', 'Denver',
+                'Jacksonville', 'Indianapolis', 'Austin', 'San Francisco', 'Columbus', 'Fort Worth', 'Charlotte', 'Detroit', 'El Paso', 'Memphis', 'Boston',
+                'Seattle', 'Washington', 'Nashville', 'Baltimore', 'Oklahoma City', 'Louisville', 'Portland', 'Las Vegas', 'Milwaukee', 'Albuquerque',
+                'Tucson', 'Fresno', 'Sacramento', 'Long Beach', 'Kansas City', 'Mesa', 'Atlanta', 'Virginia Beach', 'Omaha', 'Boulder', 'Raleigh',
+            ];
+            $('#weatherInput').autocomplete({
+                source: cities
+            });
+
+            $('#weatherButton').on('click', function () {
+                const city = $('#weatherInput').val();
+                if (city) {
+                    fetch(`/api/weather?city=${encodeURIComponent(city)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.main) {
+                            $('#weather').text(data.weather[0].description);
+                            $('#temperature').text(data.main.temp);
+                            $('#feelsLike').text(data.main.feels_like);
+                            $('#humidity').text(data.main.humidity);
+                            $('#windSpeed').text(data.wind.speed);
+                            $('#weatherInfo').show();
+                        } else {
+                            alert('No data found for the specified city.');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Error fetching data');
+                    });
+                } else {
+                    alert('Please enter a city name');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

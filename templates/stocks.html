@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Stocks</title>
+    <link rel="stylesheet" type="text/css" href="/stylesheet.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to this POC to check the Weather or Stocks by Carl Seaholm</h1>
+        </div>
+        <div class="menu">
+            <a class="menuItem" href="/">Home</a>
+            <a class="menuItem" href="/weather">Weather</a>
+            <a class="menuItem" href="/stocks">Stocks</a>
+        </div>
+        <div class="content">
+            <div class="containerTwo">
+                <div class="weatherContainer">
+                    <input id="stockInput" type='search' placeholder="Enter stock name">
+                </div>
+                <button id="stockButton" type="button">See stock info</button>
+            </div>
+            <div id="stockInfo" style="display: none;">
+                <p>Ticker: <span id="ticker"></span></p>
+                <p>Yesterday's Open: <span id="yesterdayOpen"></span></p>
+                <p>Yesterday's Close: <span id="yesterdayClose"></span></p>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            fetch('/api/tickers')
+                .then(response => response.json())
+                .then(tickers => {
+                    $('#stockInput').autocomplete({
+                        source: tickers
+                    });
+                })
+                .catch(err => {
+                    console.error('Error fetching tickers:', err);
+                });
+
+            $('#stockButton').on('click', function () {
+                const stock = $('#stockInput').val();
+                if (stock) {
+                    fetch(`/api/stocks?stock=${encodeURIComponent(stock)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data) {
+                                $('#ticker').text(data.ticker);
+                                $('#yesterdayOpen').text(data.open);
+                                $('#yesterdayClose').text(data.close);
+                                $('#stockInfo').show();
+                            } else {
+                                alert('No data found for the specified stock.');
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert('Error fetching data');
+                        });
+                } else {
+                    alert('Please enter a stock to view');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
